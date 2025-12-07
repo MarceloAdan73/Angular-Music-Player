@@ -31,6 +31,16 @@ A modern, responsive music player built with Angular 21 featuring local MP3 file
 
 </div>
 
+## 📸 Application Screenshots
+
+| Vista Principal | Vista Móvil |
+|----------------|-------------|
+| ![Main](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen1.png) | ![Mobile](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen2.png) |
+
+| Efectos Visuales | Controles |
+|-----------------|-----------|
+| ![Effects](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen3.png) | ![Controls](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen4.png) |
+
 ---
 
 ## ✨ Key Features
