@@ -50,7 +50,15 @@ npm install
 # Iniciar servidor de desarrollo
 ng serve
 ```
-### 📁 Estructura del Proyecto
+# Clonar repositorio
+git clone https://github.com/MarceloAdan73/music-player.git
+cd music-player
+
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+ng serve
 
 Angular-Music-Player/
 ├── src/
@@ -74,6 +82,5 @@ Angular-Music-Player/
 ├── package.json
 ├── vercel.json
 └── README.md
-
 
 
