@@ -14,7 +14,27 @@
 
 A modern, responsive music player built with Angular 21 featuring local MP3 files, album covers, and a sleek dark-themed UI with audio visualization particles.
 
-![Music Player Screenshot](https://via.placeholder.com/800x450/1a1a2e/FFFFFF?text=Music+Player+Angular+App)
+## 🖼️ Screenshots
+
+<div align="center">
+
+### 🎵 Main Player Interface
+![Main Player](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen1.png)
+*Reproductor principal con controles y lista de canciones*
+
+### 📱 Mobile Responsive View  
+![Mobile View](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen2.png)
+*Vista optimizada para dispositivos móviles*
+
+### 🎨 Visual Effects & Particles
+![Visual Effects](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen3.png)
+*Sistema de partículas y efectos visuales*
+
+### 🎛️ Player Controls Panel
+![Player Controls](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen4.png)
+*Panel completo de controles del reproductor*
+
+</div>
 
 ---
 
