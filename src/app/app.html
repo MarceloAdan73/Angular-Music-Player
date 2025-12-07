@@ -1,0 +1,164 @@
+<main class="app-container">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="angular-logo">
+          <img src="https://angular.io/assets/images/logos/angular/angular.svg" 
+               alt="Angular Logo" 
+               title="Angular Logo" 
+               class="angular-image">
+          <div class="app-title">
+            <h1>Music Player</h1>
+            <p class="app-subtitle">-Developed In Angular-</p>
+          </div>
+        </div>
+      </div>
+      <p class="tagline">Music In Angular</p>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <div class="main-content-wrapper">
+    <div class="main-dark-content">
+      
+      <!-- Reproductor Principal -->
+      <div class="dark-player-section" *ngIf="currentSong">
+        <div class="dark-player-grid">
+          
+          <!-- Portada con ondas animadas -->
+          <div class="dark-cover-container">
+            <div class="cover-wrapper" [class.playing]="isPlaying">
+              <!-- CONTENEDOR DE WAVESURFER COMO ANILLO -->
+              <div class="waveform-ring-container" *ngIf="false">
+                <div #waveformElement id="waveform" class="waveform-ring"></div>
+              </div>
+              
+              <!-- Portada -->
+              <img 
+                [src]="currentSong.portada" 
+                [alt]="currentSong.album"
+                title="Album cover"
+                class="dark-cover"
+                [class.float]="isPlaying">
+              
+              <!-- Loading indicator -->
+              <div class="loading-overlay" *ngIf="isLoading">
+                <div class="loading-spinner"></div>
+                <span>Cargando audio...</span>
+              </div>
+              
+              <!-- Efecto de ondas animadas -->
+              <div class="waves-animation" *ngIf="isPlaying">
+                <div class="wave-layer wave-layer-1"></div>
+                <div class="wave-layer wave-layer-2"></div>
+                <div class="wave-layer wave-layer-3"></div>
+                <div class="wave-layer wave-layer-4"></div>
+              </div>
+              
+              <!-- Partículas -->
+              <div class="particle-field" *ngIf="isPlaying">
+                <div class="particle" *ngFor="let particle of particles; let i = index"
+                     [style.left]="particle.x + '%'"
+                     [style.top]="particle.y + '%'"
+                     [style.animation-delay]="particle.delay + 's'"
+                     [style.width]="particle.size + 'px'"
+                     [style.height]="particle.size + 'px'"
+                     [style.background]="particle.color"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controles e Información -->
+          <div class="dark-controls-panel">
+            <div class="track-info-dark">
+              <div class="track-header">
+                <h2 class="dark-track-title">{{ currentSong.titulo }}</h2>
+                <div class="track-status" [class.playing]="isPlaying" [class.paused]="!isPlaying">
+                  <span class="status-dot"></span>
+                  {{ isPlaying ? 'EN VIVO' : 'PAUSADO' }}
+                </div>
+              </div>
+              
+              <div class="track-metadata">
+                <div class="metadata-item">
+                  <i class="fas fa-user"></i>
+                  <span>{{ currentSong.artista }}</span>
+                </div>
+                <div class="metadata-item">
+                  <i class="fas fa-compact-disc"></i>
+                  <span>{{ currentSong.album }}</span>
+                </div>
+                <div class="metadata-item">
+                  <i class="fas fa-calendar"></i>
+                  <span>{{ currentSong.anio }}</span>
+                </div>
+                <div class="metadata-item">
+                  <i class="fas fa-tag"></i>
+                  <span>{{ currentSong.genero }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Controles de reproducción -->
+            <div class="dark-controls">
+              <div class="control-row">
+                <!-- Botón Anterior -->
+                <button class="dark-btn circle" (click)="playPrevious()" title="Canción anterior">
+                  <i class="fas fa-backward"></i>
+                </button>
+                
+                <!-- Botón Play/Pause -->
+                <button class="dark-btn play-btn" (click)="togglePlayPause()" title="Play/Pause">
+                  <i class="fas" [class.fa-play]="!isPlaying" [class.fa-pause]="isPlaying"></i>
+                </button>
+                
+                <!-- Botón Siguiente -->
+                <button class="dark-btn circle" (click)="playNext()" title="Siguiente canción">
+                  <i class="fas fa-forward"></i>
+                </button>
+                
+                <!-- Botón Aleatorio -->
+                <button class="dark-btn circle" (click)="toggleShuffle()" title="Modo aleatorio" 
+                        [class.shuffle-active]="isShuffle">
+                  <i class="fas fa-random"></i>
+                </button>
+              </div>
+
+              <!-- Barra de progreso -->
+              <div class="dark-progress">
+                <span class="time dark">{{ formatTime(currentTime) }}</span>
+                <div class="progress-dark-container" (click)="seekToPosition($event)">
+                  <div class="progress-dark-track">
+                    <div class="progress-dark-fill" [style.width]="progressPercentage + '%'">
+                      <div class="progress-glow"></div>
+                    </div>
+                  </div>
+                </div>
+                <span class="time dark">{{ formatTime(duration) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Biblioteca -->
+      <div class="dark-library">
+        <div class="dark-section-header">
+          <div class="header-left">
+            <i class="fas fa-list-music"></i>
+            <h2>Tu Biblioteca</h2>
+            <span class="dark-badge">{{ musicLibrary.getAllSongs().length }} canciones</span>
+          </div>
+        </div>
+        <app-song-list></app-song-list>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Efectos de fondo -->
+  <div class="dark-background-effects">
+    <div class="nebula"></div>
+    <div class="stars"></div>
+  </div>
+</main>

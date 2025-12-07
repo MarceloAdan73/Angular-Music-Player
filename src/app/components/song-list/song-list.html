@@ -1,0 +1,121 @@
+<!-- Song List Template - Modern Design -->
+<div class="song-list-container">
+  
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <div class="search-wrapper">
+      <div class="search-icon">🔍</div>
+      <input 
+        type="text" 
+        class="search-input"
+        [(ngModel)]="terminoBusqueda"
+        (ngModelChange)="buscarCanciones()"
+        placeholder="Buscar canciones, artistas o álbumes..."
+        aria-label="Buscar canciones"
+      >
+      <button 
+        *ngIf="terminoBusqueda" 
+        class="clear-search"
+        (click)="limpiarBusqueda()"
+        aria-label="Limpiar búsqueda"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Cargando tu biblioteca musical...</p>
+  </div>
+
+  <!-- Skeleton Loader -->
+  <div *ngIf="isLoading" class="skeleton-grid">
+    <div *ngFor="let i of [1,2,3,4]" class="skeleton-card">
+      <div class="skeleton-cover"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid de canciones -->
+  <div *ngIf="!isLoading" class="songs-grid">
+    <div 
+      *ngFor="let cancion of cancionesFiltradas; trackBy: trackByCancionId"
+      class="song-card"
+      [class.playing]="esCancionActual(cancion)"
+      (click)="reproducirCancion(cancion)"
+      (mouseenter)="hoveredCardId = cancion.id"
+      (mouseleave)="hoveredCardId = null"
+      [attr.aria-label]="'Reproducir ' + cancion.titulo"
+      role="button"
+      tabindex="0"
+      (keydown.enter)="reproducirCancion(cancion)"
+    >
+      <!-- Badge "ON AIR" -->
+      <div *ngIf="esCancionActual(cancion)" class="playing-badge">
+        ON AIR
+      </div>
+
+      <!-- Contenedor de portada -->
+      <div class="cover-container">
+        <div class="cover-image-wrapper">
+          <img 
+            [src]="cancion.portada" 
+            [alt]="'Portada de ' + cancion.titulo"
+            class="cover-image"
+            loading="lazy"
+            (error)="cancion.portada = 'assets/default-cover.png'"
+          />
+        </div>
+        
+        <!-- Botón Play flotante -->
+        <div class="play-button-overlay">
+          <button class="play-button" aria-label="Reproducir">
+            ▶
+          </button>
+        </div>
+      </div>
+
+      <!-- Información de la canción -->
+      <div class="song-info">
+        <h3 class="song-title">{{ cancion.titulo }}</h3>
+        <p class="song-artist">{{ cancion.artista }}</p>
+        <p class="song-album">{{ cancion.album }}</p>
+        
+        <!-- Pie de tarjeta -->
+        <div class="song-footer">
+          <span class="song-duration">
+            {{ formatearDuracion(cancion.duracion) }}
+          </span>
+          
+          <!-- Solo botón de opciones -->
+          <div class="song-actions">
+            <button class="action-btn" (click)="$event.stopPropagation()" aria-label="Más opciones">
+              ⋮
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado sin resultados -->
+  <div *ngIf="!isLoading && cancionesFiltradas.length === 0" class="no-results">
+    <div class="no-results-icon">🎵</div>
+    <h3>No se encontraron canciones</h3>
+    <p>Intenta con otros términos de búsqueda</p>
+    <button class="clear-search" (click)="limpiarBusqueda()" style="margin-top: 1rem;">
+      Limpiar búsqueda
+    </button>
+  </div>
+
+  <!-- Contador de resultados -->
+  <div *ngIf="!isLoading && cancionesFiltradas.length > 0" class="results-count">
+    <p>{{ cancionesFiltradas.length }} de {{ canciones.length }} canciones</p>
+  </div>
+</div>
