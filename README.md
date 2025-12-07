@@ -68,43 +68,39 @@ A modern, responsive music player built with Angular 21 featuring local MP3 file
 ## 📁 Project Architecture
 Angular-Music-Player/
 ├── 🗂️ src/
-│ ├── 🎵 app/
-│ │ ├── 🧩 components/
-│ │ │ └── 📋 song-list/ # Song list component with templates
-│ │ ├── ⚙️ services/
-│ │ │ ├── 🔊 audio.service.ts # Audio playback and controls
-│ │ │ ├── 📚 music-library.service.ts # Song metadata management
-│ │ │ └── 🖼️ image.service.ts # Image loading and optimization
-│ │ ├── 📐 models/
-│ │ │ └── 🎶 cancion.model.ts # Song interface and data types
-│ │ ├── 🏠 app.ts # Main application component
-│ │ ├── 🎨 app.html # Main template with player UI
-│ │ └── 🎨 app.css # Main styles with particles
-│ ├── 📦 assets/
-│ │ ├── 🔊 audio/ # 6 local MP3 files (38MB total)
-│ │ │ ├── al_compas_mentira.mp3 # Tren Loco - 4.8MB
-│ │ │ ├── caught_somewhere.mp3 # Iron Maiden - 11MB
-│ │ │ ├── cuantas_palabras.mp3 # O'Connor - 5.8MB
-│ │ │ ├── down_pilots.mp3 # Stone Temple Pilots - 8.9MB
-│ │ │ ├── judas_oficio.mp3 # Malón - 4.0MB
-│ │ │ └── let_it_roll.mp3 # Velvet Revolver - 3.6MB
-│ │ └── 🖼️ images/
-│ │ └── 📸 covers/ # Album covers in WEBP format
-│ │ ├── Tren_Loco.webp # 31KB
-│ │ ├── Iron_Maiden.webp # 50KB
-│ │ ├── oconnor.webp # 34KB
-│ │ ├── Stone_Temple_Pilots.webp # 35KB
-│ │ ├── Malon.webp # 17KB
-│ │ └── Velvet_Revolver.webp # 27KB
-│ └── 🏠 index.html # HTML entry point
-├── ⚙️ angular.json # Angular configuration
-├── 📦 package.json # Dependencies and scripts
-├── 🚀 vercel.json # Vercel deployment configuration
-└── 📖 README.md # This documentation
-
-text
-
----
+│   ├── 🎵 app/
+│   │   ├── 🧩 components/
+│   │   │   └── 📋 song-list/          # Song list component with templates
+│   │   ├── ⚙️ services/
+│   │   │   ├── 🔊 audio.service.ts     # Audio playback and controls
+│   │   │   ├── 📚 music-library.service.ts  # Song metadata management
+│   │   │   └── 🖼️ image.service.ts    # Image loading and optimization
+│   │   ├── 📐 models/
+│   │   │   └── 🎶 cancion.model.ts    # Song interface and data types
+│   │   ├── 🏠 app.ts                  # Main application component
+│   │   ├── 🎨 app.html                # Main template with player UI
+│   │   └── 🎨 app.css                 # Main styles with particles
+│   ├── 📦 assets/
+│   │   ├── 🔊 audio/                  # 6 local MP3 files (38MB total)
+│   │   │   ├── al_compas_mentira.mp3    # Tren Loco - 4.8MB
+│   │   │   ├── caught_somewhere.mp3     # Iron Maiden - 11MB
+│   │   │   ├── cuantas_palabras.mp3     # O'Connor - 5.8MB
+│   │   │   ├── down_pilots.mp3          # Stone Temple Pilots - 8.9MB
+│   │   │   ├── judas_oficio.mp3         # Malón - 4.0MB
+│   │   │   └── let_it_roll.mp3          # Velvet Revolver - 3.6MB
+│   │   └── 🖼️ images/
+│   │       └── 📸 covers/              # Album covers in WEBP format
+│   │           ├── Tren_Loco.webp        # 31KB
+│   │           ├── Iron_Maiden.webp      # 50KB
+│   │           ├── oconnor.webp          # 34KB
+│   │           ├── Stone_Temple_Pilots.webp  # 35KB
+│   │           ├── Malon.webp            # 17KB
+│   │           └── Velvet_Revolver.webp  # 27KB
+│   └── 🏠 index.html                  # HTML entry point
+├── ⚙️ angular.json                   # Angular configuration
+├── 📦 package.json                   # Dependencies and scripts
+├── 🚀 vercel.json                    # Vercel deployment configuration
+└── 📖 README.md                      # This documentation
 
 ## 🎛️ Player Controls
 
