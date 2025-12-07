@@ -145,6 +145,7 @@ npm install
 
 # Start development server
 ng serve
+```
 
 # Open in browser
 open http://localhost:4200
@@ -299,4 +300,4 @@ Built with ❤️ using Angular 21, HTML5 Audio API, and modern web technologies
 
 🎵 Happy Listening! 🎵
 
-</div> ```
+</div> 
