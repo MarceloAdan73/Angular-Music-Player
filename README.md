@@ -22,15 +22,6 @@ Un reproductor de música moderno, completamente responsive y funcional construi
 - 🔊 **Control de volumen** integrado
 - 🖼️ **Portadas de álbumes** en formato WEBP optimizado
 
-## 🎵 Canciones incluidas
-
-1. **"Al Compás de la Mentira"** - Tren Loco (Heavy Metal)
-2. **"Caught Somewhere in Time"** - Iron Maiden (Heavy Metal)
-3. **"Cuantas Palabras"** - O'Connor (Rock)
-4. **"Down"** - Stone Temple Pilots (Grunge Rock)
-5. **"Judas Oficio"** - Malón (Heavy Metal)
-6. **"Let It Roll"** - Velvet Revolver (Hard Rock)
-
 ## 🚀 Comenzar
 
 ### Prerrequisitos
@@ -50,15 +41,6 @@ npm install
 # Iniciar servidor de desarrollo
 ng serve
 ```
-# Clonar repositorio
-git clone https://github.com/MarceloAdan73/music-player.git
-cd music-player
-
-# Instalar dependencias
-npm install
-
-# Iniciar servidor de desarrollo
-ng serve
 
 📁 Estructura del Proyecto
 ```
