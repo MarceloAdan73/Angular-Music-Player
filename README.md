@@ -68,39 +68,41 @@ A modern, responsive music player built with Angular 21 featuring local MP3 file
 ## 📁 Project Architecture
 Angular-Music-Player/
 ├── src/
-│   ├── app/
-│   │   ├── components/
-│   │   │   └── song-list/
-│   │   ├── services/
-│   │   │   ├── audio.service.ts
-│   │   │   ├── music-library.service.ts
-│   │   │   └── image.service.ts
-│   │   ├── models/
-│   │   │   └── cancion.model.ts
-│   │   ├── app.ts
-│   │   ├── app.html
-│   │   └── app.css
-│   ├── assets/
-│   │   ├── audio/
-│   │   │   ├── al_compas_mentira.mp3
-│   │   │   ├── caught_somewhere.mp3
-│   │   │   ├── cuantas_palabras.mp3
-│   │   │   ├── down_pilots.mp3
-│   │   │   ├── judas_oficio.mp3
-│   │   │   └── let_it_roll.mp3
-│   │   └── images/
-│   │       └── covers/
-│   │           ├── Tren_Loco.webp
-│   │           ├── Iron_Maiden.webp
-│   │           ├── oconnor.webp
-│   │           ├── Stone_Temple_Pilots.webp
-│   │           ├── Malon.webp
-│   │           └── Velvet_Revolver.webp
-│   └── index.html
+│ ├── app/
+│ │ ├── components/
+│ │ │ └── song-list/
+│ │ ├── services/
+│ │ │ ├── audio.service.ts
+│ │ │ ├── music-library.service.ts
+│ │ │ └── image.service.ts
+│ │ ├── models/
+│ │ │ └── cancion.model.ts
+│ │ ├── app.ts
+│ │ ├── app.html
+│ │ └── app.css
+│ ├── assets/
+│ │ ├── audio/
+│ │ │ ├── al_compas_mentira.mp3
+│ │ │ ├── caught_somewhere.mp3
+│ │ │ ├── cuantas_palabras.mp3
+│ │ │ ├── down_pilots.mp3
+│ │ │ ├── judas_oficio.mp3
+│ │ │ └── let_it_roll.mp3
+│ │ └── images/
+│ │ └── covers/
+│ │ ├── Tren_Loco.webp
+│ │ ├── Iron_Maiden.webp
+│ │ ├── oconnor.webp
+│ │ ├── Stone_Temple_Pilots.webp
+│ │ ├── Malon.webp
+│ │ └── Velvet_Revolver.webp
+│ └── index.html
 ├── angular.json
 ├── package.json
 ├── vercel.json
 └── README.md
+
+Pega estas 27 líneas exa
 
 ## 🎛️ Player Controls
 
