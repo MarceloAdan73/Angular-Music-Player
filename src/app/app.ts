@@ -115,7 +115,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const percentage = Math.min(Math.max(x / rect.width, 0), 1);
     const newTime = this.currentSong.duracion * percentage;
     
-    console.log('��� Saltando a:', this.formatTime(newTime));
+    console.log('Saltando a:', this.formatTime(newTime));
     this.audioService.seekTo(newTime);
     this.cdr.detectChanges();
   }
@@ -123,7 +123,12 @@ export class AppComponent implements OnInit, OnDestroy {
   private initializeDefaultSong(): void {
     const songs = this.musicLibrary.getAllSongs();
     if (songs.length > 0 && !this.currentSong) {
-      this.audioService.playSong(songs[0]);
+      setTimeout(() => {
+        if (!this.currentSong) {
+          console.log('Inicializando primera canción con delay');
+          this.audioService.playSong(songs[0]);
+        }
+      }, 500);
     }
   }
 

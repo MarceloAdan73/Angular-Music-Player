@@ -21,7 +21,7 @@ export class AudioService {
   public isShuffleMode$: Observable<boolean> = this.isShuffleModeSubject.asObservable();
 
   constructor(private musicLibrary: MusicLibraryService) {
-    console.log('ÔøΩÔøΩÔøΩ AudioService inicializado - VERSI√ìN SIMPLIFICADA');
+    console.log('AudioService inicializado');
     this.audio = new Audio();
     this.setupAudioListeners();
     this.audio.volume = 0.7;
@@ -67,45 +67,201 @@ export class AudioService {
   }
 
   public playSong(song: Cancion): void {
-    console.log('ÔøΩÔøΩÔøΩ Reproduciendo:', song.titulo);
+    console.log('Ìæµ Reproduciendo:', song.titulo);
     
-    // Detener audio actual
     this.audio.pause();
     this.audio.currentTime = 0;
+    this.audio.removeAttribute('src');
+    this.audio.load();
     
-    // Resetear estado
     this.currentTimeSubject.next(0);
     this.isPlayingSubject.next(false);
     this.isLoadingSubject.next(true);
     
-    // Configurar nueva canci√≥n
     this.currentSongSubject.next(song);
     
-    // Intentar con ruta local primero
-    const audioPath = `assets/audio/${song.archivo}`;
-    console.log('ÔøΩÔøΩÔøΩ Intentando ruta:', audioPath);
+    // PRIMERO intentar con ruta local (sin / al inicio)
+    const localPath = `assets/audio/${song.archivo}`;
+    console.log('Ì≥Å Intentando ruta local:', localPath);
     
+    // Intentar con ruta local primero
+    this.tryLocalPath(localPath, song);
+  }
+
+  private tryLocalPath(path: string, song: Cancion, retriesLeft: number = 2): void {
     try {
-      this.audio.src = audioPath;
+      this.audio.src = path;
       this.audio.load();
       
-      this.audio.play().then(() => {
-        console.log('‚úÖ Audio iniciado correctamente');
-      }).catch(error => {
-        console.error('‚ùå Error al reproducir:', error);
-        this.useFallbackAudio(song);
-      });
+      const successHandler = () => {
+        console.log('‚úÖ Audio local cargado correctamente');
+        this.isLoadingSubject.next(false);
+        
+        this.audio.play()
+          .then(() => {
+            console.log('‚úÖ Reproducci√≥n local iniciada');
+          })
+          .catch(error => {
+            console.error('‚ùå Error al reproducir local:', error);
+            if (retriesLeft > 0) {
+              console.log(`Ì¥Ñ Reintentando local... (${retriesLeft} intentos)`);
+              setTimeout(() => {
+                this.tryLocalPath(path, song, retriesLeft - 1);
+              }, 300);
+            } else {
+              // Si falla local, intentar con ruta absoluta
+              this.tryAbsolutePath(song);
+            }
+          });
+      };
+      
+      const errorHandler = () => {
+        console.log('‚ùå No se pudo cargar ruta local, probando absoluta...');
+        if (retriesLeft > 0) {
+          setTimeout(() => {
+            this.tryLocalPath(path, song, retriesLeft - 1);
+          }, 300);
+        } else {
+          this.tryAbsolutePath(song);
+        }
+      };
+      
+      this.audio.addEventListener('canplaythrough', successHandler, { once: true });
+      this.audio.addEventListener('error', errorHandler, { once: true });
+      
+      // Timeout por si tarda demasiado
+      setTimeout(() => {
+        if (this.isLoadingSubject.value) {
+          console.log('‚è∞ Timeout en carga local, probando absoluta...');
+          this.tryAbsolutePath(song);
+        }
+      }, 3000);
       
     } catch (error) {
-      console.error('‚ùå Error al cargar audio:', error);
+      console.error('Error en tryLocalPath:', error);
+      this.tryAbsolutePath(song);
+    }
+  }
+
+  private tryAbsolutePath(song: Cancion): void {
+    const absolutePath = `/assets/audio/${song.archivo}`;
+    console.log('Ì≥Å Intentando ruta absoluta:', absolutePath);
+    
+    try {
+      this.audio.src = absolutePath;
+      this.audio.load();
+      
+      const successHandler = () => {
+        console.log('‚úÖ Audio absoluto cargado');
+        this.isLoadingSubject.next(false);
+        
+        this.audio.play()
+          .then(() => {
+            console.log('‚úÖ Reproducci√≥n iniciada');
+          })
+          .catch(error => {
+            console.error('‚ùå Error al reproducir:', error);
+            this.useFallbackAudio(song);
+          });
+      };
+      
+      const errorHandler = () => {
+        console.log('‚ùå Fall√≥ ruta absoluta, usando fallback...');
+        this.useFallbackAudio(song);
+      };
+      
+      this.audio.addEventListener('canplaythrough', successHandler, { once: true });
+      this.audio.addEventListener('error', errorHandler, { once: true });
+      
+    } catch (error) {
       this.useFallbackAudio(song);
     }
   }
 
+  private loadAudioWithRetry(audioPath: string, song: Cancion, retriesLeft: number): void {
+    try {
+      this.audio.src = '';
+      
+      this.audio.src = audioPath;
+      this.audio.load();
+      
+      const canPlayHandler = () => {
+        console.log('‚úÖ Audio listo para reproducir');
+        this.isLoadingSubject.next(false);
+        
+        this.audio.play()
+          .then(() => {
+            console.log('‚úÖ Reproducci√≥n iniciada exitosamente');
+          })
+          .catch(error => {
+            console.error('‚ùå Error al iniciar reproducci√≥n:', error);
+            if (retriesLeft > 0) {
+              console.log(`Ì¥Ñ Reintentando carga... (${retriesLeft} intentos restantes)`);
+              setTimeout(() => {
+                this.loadAudioWithRetry(audioPath, song, retriesLeft - 1);
+              }, 500);
+            } else {
+              this.useFallbackAudio(song);
+            }
+          });
+      };
+      
+      const errorHandler = () => {
+        console.error('‚ùå Error al cargar el audio');
+        if (retriesLeft > 0) {
+          console.log(`Ì¥Ñ Reintentando carga... (${retriesLeft} intentos restantes)`);
+          setTimeout(() => {
+            this.loadAudioWithRetry(audioPath, song, retriesLeft - 1);
+          }, 500);
+        } else {
+          this.useFallbackAudio(song);
+        }
+      };
+      
+      this.audio.addEventListener('canplaythrough', canPlayHandler, { once: true });
+      this.audio.addEventListener('error', errorHandler, { once: true });
+      
+    } catch (error) {
+      console.error('‚ùå Error catastr√≥fico:', error);
+      if (retriesLeft > 0) {
+        setTimeout(() => {
+          this.loadAudioWithRetry(audioPath, song, retriesLeft - 1);
+        }, 500);
+      } else {
+        this.useFallbackAudio(song);
+      }
+    }
+  }
+
   private useFallbackAudio(song: Cancion): void {
-    console.log('Usando audio de prueba online');
+    console.log('‚ö†Ô∏è Usando fallback local');
     
-    // URLs de audio de prueba
+    const alternativePath = `assets/audio/${song.archivo}`;
+    console.log('Ì≥Å Intentando ruta alternativa:', alternativePath);
+    
+    try {
+      this.audio.src = alternativePath;
+      this.audio.load();
+      
+      const canPlayHandler = () => {
+        this.isLoadingSubject.next(false);
+        this.audio.play().catch(() => this.fallbackToOnline());
+      };
+      
+      const errorHandler = () => {
+        this.fallbackToOnline();
+      };
+      
+      this.audio.addEventListener('canplaythrough', canPlayHandler, { once: true });
+      this.audio.addEventListener('error', errorHandler, { once: true });
+      
+    } catch (error) {
+      this.fallbackToOnline();
+    }
+  }
+
+  private fallbackToOnline(): void {
+    console.log('Ìºê Usando fallback online');
     const fallbackUrls = [
       'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
       'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
@@ -193,7 +349,7 @@ export class AudioService {
       const currentIndex = songs.findIndex(s => s.id === currentSong.id);
       const nextIndex = currentIndex < songs.length - 1 ? currentIndex + 1 : 0;
       
-      console.log(`ÔøΩÔøΩÔøΩ Actual: ${currentIndex}, Siguiente: ${nextIndex}`);
+      console.log(`Actual: ${currentIndex}, Siguiente: ${nextIndex}`);
       this.playSong(songs[nextIndex]);
     }
   }
@@ -204,11 +360,9 @@ export class AudioService {
     
     if (songs.length === 0) return;
     
-    // Filtrar canci√≥n actual para no repetir inmediatamente
     const availableSongs = songs.filter(song => song.id !== currentSong?.id);
     
     if (availableSongs.length === 0) {
-      // Si solo hay una canci√≥n, reproducirla
       this.playSong(songs[0]);
     } else {
       const randomIndex = Math.floor(Math.random() * availableSongs.length);
@@ -229,7 +383,6 @@ export class AudioService {
     }
   }
 
-  // Observable getters
   public getCurrentSong(): Observable<Cancion | null> {
     return this.currentSong$;
   }
@@ -250,7 +403,6 @@ export class AudioService {
     return this.isShuffleMode$;
   }
 
-  // M√©todos directos
   public getCurrentSongValue(): Cancion | null {
     return this.currentSongSubject.value;
   }
