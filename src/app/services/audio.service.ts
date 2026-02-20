@@ -112,34 +112,52 @@ export class AudioService {
     this.tryLocalPath(localPath, song);
   }
 
-  private tryLocalPath(path: string, song: Cancion, retriesLeft: number = 2): void {
+  private tryLocalPath(path: string, song: Cancion, retriesLeft: number = 3): void {
     try {
       this.audio.src = path;
       this.audio.load();
+      
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // ⚡ Si es desktop, reproducir DIRECTAMENTE sin condiciones
+      if (!isMobile) {
+        console.log('🖥️ Desktop detectado - reproduciendo directamente');
+        this.audio.addEventListener('canplaythrough', () => {
+          console.log('✅ Audio listo, reproduciendo...');
+          this.isLoadingSubject.next(false);
+          this.audio.play()
+            .then(() => console.log('✅ Reproducción exitosa'))
+            .catch(err => {
+              console.error('❌ Error en desktop:', err);
+              if (retriesLeft > 0) {
+                setTimeout(() => this.tryLocalPath(path, song, retriesLeft - 1), 500);
+              } else {
+                this.tryAbsolutePath(song);
+              }
+            });
+        }, { once: true });
+        return;
+      }
+      
+      // 📱 Si es móvil, mantener la lógica actual con interacción
+      console.log('📱 Móvil detectado - usando lógica con interacción');
       
       const successHandler = () => {
         console.log('✅ Audio local cargado correctamente');
         this.isLoadingSubject.next(false);
         
-        // En móvil, NO intentar reproducir automáticamente si no hay interacción
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile && !window.userInteracted) {
+        if (!window.userInteracted) {
           console.log('📱 Móvil sin interacción - esperando click en Play');
           return;
         }
         
         this.audio.play()
-          .then(() => {
-            console.log('✅ Reproducción iniciada');
-          })
+          .then(() => console.log('✅ Reproducción iniciada'))
           .catch(error => {
             console.error('❌ Error al reproducir:', error);
-            if (retriesLeft > 0 && window.userInteracted) {
+            if (retriesLeft > 0) {
               console.log(`🔄 Reintentando... (${retriesLeft} intentos)`);
-              setTimeout(() => {
-                this.tryLocalPath(path, song, retriesLeft - 1);
-              }, 300);
+              setTimeout(() => this.tryLocalPath(path, song, retriesLeft - 1), 500);
             } else {
               this.tryAbsolutePath(song);
             }
@@ -149,9 +167,7 @@ export class AudioService {
       const errorHandler = () => {
         console.log('❌ No se pudo cargar ruta local');
         if (retriesLeft > 0) {
-          setTimeout(() => {
-            this.tryLocalPath(path, song, retriesLeft - 1);
-          }, 300);
+          setTimeout(() => this.tryLocalPath(path, song, retriesLeft - 1), 500);
         } else {
           this.tryAbsolutePath(song);
         }
@@ -174,21 +190,30 @@ export class AudioService {
       this.audio.src = absolutePath;
       this.audio.load();
       
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (!isMobile) {
+        console.log('🖥️ Desktop - reproduciendo ruta absoluta');
+        this.audio.addEventListener('canplaythrough', () => {
+          this.isLoadingSubject.next(false);
+          this.audio.play()
+            .then(() => console.log('✅ Reproducción exitosa'))
+            .catch(err => this.useFallbackAudio(song));
+        }, { once: true });
+        return;
+      }
+      
       const successHandler = () => {
         console.log('✅ Audio absoluto cargado');
         this.isLoadingSubject.next(false);
         
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile && !window.userInteracted) {
+        if (!window.userInteracted) {
           console.log('📱 Móvil sin interacción - esperando click en Play');
           return;
         }
         
         this.audio.play()
-          .then(() => {
-            console.log('✅ Reproducción iniciada');
-          })
+          .then(() => console.log('✅ Reproducción iniciada'))
           .catch(error => {
             console.error('❌ Error al reproducir:', error);
             this.useFallbackAudio(song);
@@ -218,12 +243,21 @@ export class AudioService {
       this.audio.src = alternativePath;
       this.audio.load();
       
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (!isMobile) {
+        console.log('🖥️ Desktop - reproduciendo fallback');
+        this.audio.addEventListener('canplaythrough', () => {
+          this.isLoadingSubject.next(false);
+          this.audio.play().catch(() => this.fallbackToOnline());
+        }, { once: true });
+        return;
+      }
+      
       const canPlayHandler = () => {
         this.isLoadingSubject.next(false);
         
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile && !window.userInteracted) {
+        if (!window.userInteracted) {
           console.log('📱 Móvil sin interacción - esperando click en Play');
           return;
         }
