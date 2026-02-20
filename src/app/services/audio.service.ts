@@ -3,6 +3,12 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Cancion } from '../models/cancion.model';
 import { MusicLibraryService } from './music-library.service';
 
+declare global {
+  interface Window {
+    userInteracted: boolean;
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,10 +27,23 @@ export class AudioService {
   public isShuffleMode$: Observable<boolean> = this.isShuffleModeSubject.asObservable();
 
   constructor(private musicLibrary: MusicLibraryService) {
-    console.log('AudioService inicializado');
+    console.log('🎵 AudioService inicializado');
     this.audio = new Audio();
     this.setupAudioListeners();
     this.audio.volume = 0.7;
+    
+    // Detectar interacción del usuario
+    if (typeof window !== 'undefined') {
+      window.userInteracted = false;
+      
+      const markInteracted = () => {
+        window.userInteracted = true;
+        console.log('👆 Usuario interactuó con la página');
+      };
+      
+      document.addEventListener('click', markInteracted, { once: true });
+      document.addEventListener('touchstart', markInteracted, { once: true });
+    }
   }
 
   private setupAudioListeners(): void {
@@ -66,8 +85,15 @@ export class AudioService {
     });
   }
 
+  public setCurrentSong(song: Cancion): void {
+    console.log('🎵 Precargando canción (sin reproducir):', song.titulo);
+    this.currentSongSubject.next(song);
+    this.audio.src = `assets/audio/${song.archivo}`;
+    this.audio.load();
+  }
+
   public playSong(song: Cancion): void {
-    console.log('��� Reproduciendo:', song.titulo);
+    console.log('🎵 Reproduciendo:', song.titulo);
     
     this.audio.pause();
     this.audio.currentTime = 0;
@@ -80,11 +106,9 @@ export class AudioService {
     
     this.currentSongSubject.next(song);
     
-    // PRIMERO intentar con ruta local (sin / al inicio)
     const localPath = `assets/audio/${song.archivo}`;
-    console.log('��� Intentando ruta local:', localPath);
+    console.log('📁 Intentando ruta local:', localPath);
     
-    // Intentar con ruta local primero
     this.tryLocalPath(localPath, song);
   }
 
@@ -97,26 +121,33 @@ export class AudioService {
         console.log('✅ Audio local cargado correctamente');
         this.isLoadingSubject.next(false);
         
+        // En móvil, NO intentar reproducir automáticamente si no hay interacción
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile && !window.userInteracted) {
+          console.log('📱 Móvil sin interacción - esperando click en Play');
+          return;
+        }
+        
         this.audio.play()
           .then(() => {
-            console.log('✅ Reproducción local iniciada');
+            console.log('✅ Reproducción iniciada');
           })
           .catch(error => {
-            console.error('❌ Error al reproducir local:', error);
-            if (retriesLeft > 0) {
-              console.log(`��� Reintentando local... (${retriesLeft} intentos)`);
+            console.error('❌ Error al reproducir:', error);
+            if (retriesLeft > 0 && window.userInteracted) {
+              console.log(`🔄 Reintentando... (${retriesLeft} intentos)`);
               setTimeout(() => {
                 this.tryLocalPath(path, song, retriesLeft - 1);
               }, 300);
             } else {
-              // Si falla local, intentar con ruta absoluta
               this.tryAbsolutePath(song);
             }
           });
       };
       
       const errorHandler = () => {
-        console.log('❌ No se pudo cargar ruta local, probando absoluta...');
+        console.log('❌ No se pudo cargar ruta local');
         if (retriesLeft > 0) {
           setTimeout(() => {
             this.tryLocalPath(path, song, retriesLeft - 1);
@@ -129,14 +160,6 @@ export class AudioService {
       this.audio.addEventListener('canplaythrough', successHandler, { once: true });
       this.audio.addEventListener('error', errorHandler, { once: true });
       
-      // Timeout por si tarda demasiado
-      setTimeout(() => {
-        if (this.isLoadingSubject.value) {
-          console.log('⏰ Timeout en carga local, probando absoluta...');
-          this.tryAbsolutePath(song);
-        }
-      }, 3000);
-      
     } catch (error) {
       console.error('Error en tryLocalPath:', error);
       this.tryAbsolutePath(song);
@@ -145,7 +168,7 @@ export class AudioService {
 
   private tryAbsolutePath(song: Cancion): void {
     const absolutePath = `/assets/audio/${song.archivo}`;
-    console.log('��� Intentando ruta absoluta:', absolutePath);
+    console.log('📁 Intentando ruta absoluta:', absolutePath);
     
     try {
       this.audio.src = absolutePath;
@@ -154,6 +177,13 @@ export class AudioService {
       const successHandler = () => {
         console.log('✅ Audio absoluto cargado');
         this.isLoadingSubject.next(false);
+        
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile && !window.userInteracted) {
+          console.log('📱 Móvil sin interacción - esperando click en Play');
+          return;
+        }
         
         this.audio.play()
           .then(() => {
@@ -166,7 +196,7 @@ export class AudioService {
       };
       
       const errorHandler = () => {
-        console.log('❌ Falló ruta absoluta, usando fallback...');
+        console.log('❌ Falló ruta absoluta');
         this.useFallbackAudio(song);
       };
       
@@ -178,66 +208,11 @@ export class AudioService {
     }
   }
 
-  private loadAudioWithRetry(audioPath: string, song: Cancion, retriesLeft: number): void {
-    try {
-      this.audio.src = '';
-      
-      this.audio.src = audioPath;
-      this.audio.load();
-      
-      const canPlayHandler = () => {
-        console.log('✅ Audio listo para reproducir');
-        this.isLoadingSubject.next(false);
-        
-        this.audio.play()
-          .then(() => {
-            console.log('✅ Reproducción iniciada exitosamente');
-          })
-          .catch(error => {
-            console.error('❌ Error al iniciar reproducción:', error);
-            if (retriesLeft > 0) {
-              console.log(`��� Reintentando carga... (${retriesLeft} intentos restantes)`);
-              setTimeout(() => {
-                this.loadAudioWithRetry(audioPath, song, retriesLeft - 1);
-              }, 500);
-            } else {
-              this.useFallbackAudio(song);
-            }
-          });
-      };
-      
-      const errorHandler = () => {
-        console.error('❌ Error al cargar el audio');
-        if (retriesLeft > 0) {
-          console.log(`��� Reintentando carga... (${retriesLeft} intentos restantes)`);
-          setTimeout(() => {
-            this.loadAudioWithRetry(audioPath, song, retriesLeft - 1);
-          }, 500);
-        } else {
-          this.useFallbackAudio(song);
-        }
-      };
-      
-      this.audio.addEventListener('canplaythrough', canPlayHandler, { once: true });
-      this.audio.addEventListener('error', errorHandler, { once: true });
-      
-    } catch (error) {
-      console.error('❌ Error catastrófico:', error);
-      if (retriesLeft > 0) {
-        setTimeout(() => {
-          this.loadAudioWithRetry(audioPath, song, retriesLeft - 1);
-        }, 500);
-      } else {
-        this.useFallbackAudio(song);
-      }
-    }
-  }
-
   private useFallbackAudio(song: Cancion): void {
     console.log('⚠️ Usando fallback local');
     
     const alternativePath = `assets/audio/${song.archivo}`;
-    console.log('��� Intentando ruta alternativa:', alternativePath);
+    console.log('📁 Intentando ruta alternativa:', alternativePath);
     
     try {
       this.audio.src = alternativePath;
@@ -245,6 +220,14 @@ export class AudioService {
       
       const canPlayHandler = () => {
         this.isLoadingSubject.next(false);
+        
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile && !window.userInteracted) {
+          console.log('📱 Móvil sin interacción - esperando click en Play');
+          return;
+        }
+        
         this.audio.play().catch(() => this.fallbackToOnline());
       };
       
@@ -261,7 +244,7 @@ export class AudioService {
   }
 
   private fallbackToOnline(): void {
-    console.log('��� Usando fallback online');
+    console.log('🌐 Usando fallback online');
     const fallbackUrls = [
       'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
       'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
@@ -301,6 +284,7 @@ export class AudioService {
 
     if (this.audio.paused) {
       console.log('▶️ Iniciando reproducción');
+      window.userInteracted = true;
       this.audio.play().catch(error => {
         console.error('❌ Error al reproducir:', error);
       });
@@ -366,19 +350,19 @@ export class AudioService {
       this.playSong(songs[0]);
     } else {
       const randomIndex = Math.floor(Math.random() * availableSongs.length);
-      console.log(`Modo aleatorio: seleccionada ${randomIndex}`);
+      console.log(`🎲 Modo aleatorio: seleccionada ${randomIndex}`);
       this.playSong(availableSongs[randomIndex]);
     }
   }
 
   public setShuffleMode(enabled: boolean): void {
-    console.log(`Modo aleatorio: ${enabled ? 'ACTIVADO' : 'DESACTIVADO'}`);
+    console.log(`🔀 Modo aleatorio: ${enabled ? 'ACTIVADO' : 'DESACTIVADO'}`);
     this.isShuffleModeSubject.next(enabled);
   }
 
   public seekTo(time: number): void {
     if (!isNaN(time) && isFinite(time)) {
-      console.log('Saltando a:', this.formatTime(time));
+      console.log('⏱️ Saltando a:', this.formatTime(time));
       this.audio.currentTime = time;
     }
   }

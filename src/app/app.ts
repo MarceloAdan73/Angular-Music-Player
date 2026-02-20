@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private setupAudioSubscriptions(): void {
     this.subscriptions.push(
       this.audioService.getCurrentSong().subscribe(song => {
-        console.log('Canción actual:', song?.titulo);
+        console.log('🎵 Canción actual:', song?.titulo);
         this.currentSong = song;
         
         if (song) {
@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.audioService.getIsPlaying().subscribe(playing => {
         this.isPlaying = playing;
-        console.log('▶️ Estado:', playing ? 'REPRODUCIENDO' : 'PAUSADO');
+        console.log('▶️ Estado:', playing ? 'REPRODUCIENDO' : '⏸️ PAUSADO');
         this.cdr.detectChanges();
       })
     );
@@ -67,7 +67,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.audioService.getIsLoading().subscribe(loading => {
         this.isLoading = loading;
-        console.log('Carga:', loading ? 'CARGANDO...' : 'LISTO');
+        console.log('⏳ Carga:', loading ? 'CARGANDO...' : '✅ LISTO');
         this.cdr.detectChanges();
       })
     );
@@ -102,7 +102,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleShuffle(): void {
     this.isShuffle = !this.isShuffle;
-    console.log('Aleatorio:', this.isShuffle ? 'ON' : 'OFF');
+    console.log('🔀 Aleatorio:', this.isShuffle ? 'ON' : 'OFF');
     this.audioService.setShuffleMode(this.isShuffle);
   }
 
@@ -115,7 +115,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const percentage = Math.min(Math.max(x / rect.width, 0), 1);
     const newTime = this.currentSong.duracion * percentage;
     
-    console.log('Saltando a:', this.formatTime(newTime));
+    console.log('⏱️ Saltando a:', this.formatTime(newTime));
     this.audioService.seekTo(newTime);
     this.cdr.detectChanges();
   }
@@ -123,12 +123,15 @@ export class AppComponent implements OnInit, OnDestroy {
   private initializeDefaultSong(): void {
     const songs = this.musicLibrary.getAllSongs();
     if (songs.length > 0 && !this.currentSong) {
-      setTimeout(() => {
-        if (!this.currentSong) {
-          console.log('Inicializando primera canción con delay');
-          this.audioService.playSong(songs[0]);
-        }
-      }, 500);
+      const isMobile = window.matchMedia('(max-width: 768px)').matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log(`📱 Detectando dispositivo: ${isMobile ? 'MÓVIL' : '🖥️ DESKTOP'}`);
+      if (isMobile) {
+        console.log('📱 Modo MÓVIL - Precargando canción. Esperando click en Play.');
+        this.audioService.setCurrentSong(songs[0]);
+      } else {
+        console.log('🖥️ Modo DESKTOP - Iniciando reproducción automática.');
+        this.audioService.playSong(songs[0]);
+      }
     }
   }
 
@@ -162,6 +165,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    console.log('Componente destruido');
+    console.log('👋 Componente destruido');
   }
 }
