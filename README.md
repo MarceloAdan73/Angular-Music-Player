@@ -10,7 +10,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 ## 🌐 Live Application
-**👉 https://music-player-roan-eight.vercel.app/**
+**👉 [Visit the Music Player](https://music-player-roan-eight.vercel.app/)**
 
 ---
 
@@ -22,11 +22,11 @@ A modern, responsive music player built with Angular 21 featuring local MP3 file
 
 | Main View | Library View |
 |----------------|-------------|
-| ![Main](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen1.png) | ![Mobile](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen2.png) |
+| ![Main](https://github.com/MarceloAdan73/Angular-Music-Player/raw/main/src/assets/images/covers/screen1.png) | ![Library](https://github.com/MarceloAdan73/Angular-Music-Player/raw/main/src/assets/images/covers/screen2.png) |
 
 | Mobile View | Mobile View 2 | 
 |-----------------|-----------|
-| ![Effects](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen3.png) | ![Controls](https://github.com/MarceloAdan73/music-player/raw/main/src/assets/images/covers/screen4.png) |
+| ![Mobile](https://github.com/MarceloAdan73/Angular-Music-Player/raw/main/src/assets/images/covers/screen3.png) | ![Mobile 2](https://github.com/MarceloAdan73/Angular-Music-Player/raw/main/src/assets/images/covers/screen4.png) |
 
 ---
 
@@ -147,10 +147,10 @@ Angular-Music-Player/
 ### **Local Development**
 ```bash
 # Clone the repository
-git clone https://github.com/MarceloAdan73/music-player.git
+git clone https://github.com/MarceloAdan73/Angular-Music-Player.git
 
 # Navigate to project directory
-cd music-player
+cd Angular-Music-Player
 
 # Install dependencies
 npm install
@@ -159,16 +159,45 @@ npm install
 ng serve
 ```
 
-👨‍💻 Author
-Marcelo Adan
+Open [http://localhost:4200](http://localhost:4200) in your browser.
 
-🔗 GitHub: @MarceloAdan73
+### **Build for Production**
+```bash
+# Build the application
+ng build
+
+# The compiled files will be in the dist/ directory
+```
+
+---
+
+## 📝 How to Add New Songs
+
+To add new songs to the player:
+
+1. **Add Audio File**: Place your MP3 file in `src/assets/audio/`
+2. **Add Cover Image**: Place your WEBP image in `src/assets/images/covers/`
+3. **Update Music Library**: Edit `src/app/services/music-library.service.ts` and add the song metadata
+4. **Restart Development Server**: Run `ng serve` again
+
+---
+
+## 👨‍💻 Author
+
+**Marcelo Palma**
+
+🔗 **GitHub**: [@MarceloAdan73](https://github.com/MarceloAdan73)
+
+📧 **Email**: marcelo-palma@live.com
+
+---
 
 <div align="center">
+
 ⭐ If you enjoy this music player, please consider giving it a star!
 
 Built with ❤️ using Angular 21, HTML5 Audio API, and modern web technologies.
 
-🎵 Happy Listening! 🎵
+🎵 **Happy Listening!** 🎵
 
-</div> 
+</div>
