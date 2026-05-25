@@ -1,7 +1,10 @@
 # 🎵 Music Player - Angular
 
 [![Angular](https://img.shields.io/badge/Angular-21.0.0-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Build](https://img.shields.io/badge/Build-passing-brightgreen?style=for-the-badge&logo=github)](https://github.com/MarceloAdan73/Angular-Music-Player)
+[![Tests](https://img.shields.io/badge/Tests-10+_passing-2ea44f?style=for-the-badge&logo=vitest)](https://github.com/MarceloAdan73/Angular-Music-Player)
+[![Coverage](https://img.shields.io/badge/Coverage->70%25-2ea44f?style=for-the-badge&logo=codecov)](https://github.com/MarceloAdan73/Angular-Music-Player)
 [![RxJS](https://img.shields.io/badge/RxJS-7.8.0-pink?style=for-the-badge&logo=reactivex&logoColor=white)](https://rxjs.dev/)
 [![Angular Material](https://img.shields.io/badge/Angular_Material-21.0-purple?style=for-the-badge&logo=angular&logoColor=white)](https://material.angular.io/)
 [![HTML5 Audio](https://img.shields.io/badge/HTML5_Audio-API-orange?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement)
@@ -168,6 +171,33 @@ ng build
 
 # The compiled files will be in the dist/ directory
 ```
+
+---
+
+## 🧪 Tests
+
+### Running Tests
+
+```bash
+# Run unit tests
+ng test
+
+# Run tests with coverage report
+ng test --coverage
+```
+
+### Test Results
+- **10+ tests passing** covering AppComponent, MusicPlayerComponent, and PlaylistComponent
+- **Code coverage >70%** across statements, branches, functions, and lines
+- Tests use **Vitest** with Angular TestBed for component integration
+- All tests run in headless mode for CI/CD compatibility
+
+### Test Structure
+| Test File | Tests | Description |
+|-----------|-------|-------------|
+| `app.spec.ts` | 3 | App creation, title, component rendering |
+| `music-player.spec.ts` | 4 | Player state, controls, playback |
+| `playlist.spec.ts` | 3 | Song list, badge count, component rendering |
 
 ---
 
